@@ -29,6 +29,7 @@ html,body{overflow-x:hidden}
 .chip{font:600 14px Manrope,sans-serif;padding:12px 18px;border-radius:40px;cursor:pointer;background:transparent;color:#0A1424;border:1px solid #9A8E78}
 .chip[aria-pressed="true"]{background:#0A1424;color:#F7F2E9;border-color:#0A1424}
 </style>
+<link rel="stylesheet" href="assets/fx.css">
 </head>
 <body>
 <div style="background: #050D1A; color: #E8ECF2; font-family: Manrope, system-ui, sans-serif; font-size: 16px; line-height: 1.6; min-height: 100vh">
@@ -118,6 +119,7 @@ html,body{overflow-x:hidden}
 </div>
 <label style="display: flex; flex-direction: column; gap: 8px; font-size: 12px; letter-spacing: 0.18em; font-weight: 700">HOW CAN WE HELP? *
 <textarea required rows="4" placeholder="A few lines about your project or question" style="font: 400 16px Manrope, sans-serif; letter-spacing: 0; padding: 14px 0; border: 0; border-bottom: 1px solid #9A8E78; background: transparent; color: #0A1424; resize: vertical; outline-color: #7A5A26"></textarea></label>
+<button type="button" class="fx-ask" data-ai-draft style="align-self: flex-start; color: #7A5A26; margin-top: -10px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"></path><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"></path></svg><span>DRAFT MY MESSAGE WITH AI</span></button>
 <label style="display: flex; gap: 12px; align-items: flex-start; font-size: 14px; color: #4A5568">
 <input type="checkbox" style="width: 18px; height: 18px; margin: 2px 0 0; accent-color: #0A1424">
 <span>I agree to Etrynity storing my details to respond to this enquiry.</span></label>
@@ -166,5 +168,7 @@ document.getElementById('resetBtn').addEventListener('click', function () {
   document.getElementById('formWrap').hidden = false;
 });
 </script>
+<script src="assets/fx.js"></script>
+<script src="assets/ai.js"></script>
 </body>
 </html>
