@@ -1,0 +1,70 @@
+---
+// Shared article layout for insights and case studies.
+import Base from "../layouts/Base.astro";
+import Breadcrumbs from "./Breadcrumbs.astro";
+import CtaBand from "./CtaBand.astro";
+import { serviceBySlug, serviceUrl } from "../data/services";
+
+interface Props {
+  section: { name: string; href: string };
+  url: string;
+  title: string;
+  description: string;
+  date: Date;
+  updated?: Date;
+  author?: string;
+  services: string[];
+  kicker?: string;
+  schemaType: "BlogPosting" | "Article";
+}
+const p = Astro.props;
+const crumbs = [{ name: "Home", href: "/" }, p.section, { name: p.title, href: p.url }];
+const origin = Astro.site!.origin;
+const abs = new URL(p.url, Astro.site).href;
+const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+const schema = [{
+  "@type": p.schemaType,
+  "@id": `${abs}#article`,
+  headline: p.title,
+  description: p.description,
+  datePublished: p.date.toISOString(),
+  dateModified: (p.updated ?? p.date).toISOString(),
+  author: p.author ? { "@type": "Person", name: p.author } : { "@id": `${origin}/#organization` },
+  publisher: { "@id": `${origin}/#organization` },
+  mainEntityOfPage: { "@id": `${abs}#webpage` },
+  image: `${origin}/og-image.jpg`,
+}];
+---
+<Base title={p.title} description={p.description} breadcrumbs={crumbs} schema={schema}>
+  <section class="page-hero" aria-labelledby="page-title">
+    <div class="container">
+      <div class="page-hero-inner page-hero-inner--single">
+        <div class="stack">
+          <Breadcrumbs items={crumbs} />
+          {p.kicker && <span class="eyebrow">{p.kicker}</span>}
+          <h1 class="display" id="page-title" style="font-size:clamp(38px,4.8vw,68px)">{p.title}</h1>
+          <p class="lead">{p.description}</p>
+          <p class="muted" style="font-size:14px">
+            <time datetime={p.date.toISOString()}>{fmt(p.date)}</time>{p.author && <> · {p.author}</>}
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section section--ivory">
+    <div class="container">
+      <article class="prose">
+        <slot />
+      </article>
+      {p.services.length > 0 && (
+        <p class="prose" style="margin-top:48px">
+          <span>Related services: {p.services.map((slug, i) => {
+            const s = serviceBySlug(slug);
+            return s ? <>{i > 0 && ", "}<a href={serviceUrl(slug)}>{s.name}</a></> : null;
+          })}</span>
+        </p>
+      )}
+    </div>
+  </section>
+  <CtaBand />
+</Base>

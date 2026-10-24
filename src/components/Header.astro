@@ -1,0 +1,53 @@
+---
+import { Picture } from "astro:assets";
+import emblem from "../assets/emblem.png";
+import Icon from "./Icon.astro";
+import { SERVICES, serviceUrl } from "../data/services";
+
+const path = Astro.url.pathname.replace(/\.html$/, "").replace(/\/index$/, "/") || "/";
+const isActive = (href: string) => (href === "/" ? path === "/" : path === href || path.startsWith(`${href}/`));
+const links = [
+  { label: "Our Approach", href: "/our-approach" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
+];
+---
+<header class="site-header" data-header>
+  <div class="container">
+    <a class="brand" href="/" aria-label="Etrynity — home">
+      <Picture src={emblem} formats={["avif", "webp"]} widths={[50, 100]} sizes="50px" alt="" loading="eager" />
+      <span class="brand-text">
+        <span class="wordmark">ETRYNITY</span>
+        <small>INFINITE POSSIBILITIES</small>
+      </span>
+    </a>
+
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-menu-toggle>
+      <span class="sr-only" data-menu-label>Open menu</span>
+      <Icon name="menu" class="" strokeWidth={1.6} />
+    </button>
+
+    <nav class="main-nav" id="site-nav" aria-label="Main" data-nav>
+      <ul>
+        <li class="has-menu" data-dropdown>
+          <button class:list={["nav-link", { "is-active": isActive("/services") }]} type="button" aria-expanded="false" aria-controls="services-menu" data-dropdown-toggle>
+            Services <Icon name="chevron" class="" strokeWidth={2} />
+          </button>
+          <div class="mega" id="services-menu">
+            {SERVICES.map((s) => (
+              <a href={serviceUrl(s.slug)} aria-current={isActive(serviceUrl(s.slug)) ? "page" : undefined}>
+                <Icon name={s.icon} />
+                <span><strong>{s.name}</strong><span>{s.summary}</span></span>
+              </a>
+            ))}
+            <a class="mega-all" href="/services">All services overview <Icon name="arrow" class="" strokeWidth={1.6} /></a>
+          </div>
+        </li>
+        {links.map((l) => (
+          <li><a class="nav-link" href={l.href} aria-current={isActive(l.href) ? "page" : undefined}>{l.label}</a></li>
+        ))}
+      </ul>
+      <a class="btn btn--gold header-cta" href="/contact">Discuss your project</a>
+    </nav>
+  </div>
+</header>

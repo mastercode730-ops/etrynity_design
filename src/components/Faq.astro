@@ -1,0 +1,27 @@
+---
+interface Props {
+  faqs: { q: string; a: string }[];
+  title?: string;
+  id?: string;
+}
+const { faqs, title = "Frequently asked questions", id = "faq" } = Astro.props;
+---
+<section class="section section--ivory" aria-labelledby={`${id}-title`}>
+  <div class="container">
+    <div class="split split--top">
+      <div class="section-head" style="margin-bottom:0">
+        <span class="eyebrow">FAQ</span>
+        <h2 class="title" id={`${id}-title`}>{title}</h2>
+        <p class="lead">Can't find what you need? <a href="/contact" style="color:var(--bronze)">Ask our team</a> or try Etrynity AI.</p>
+      </div>
+      <div class="faq" data-reveal>
+        {faqs.map((f, i) => (
+          <details open={i === 0}>
+            <summary><h3 style="font:inherit">{f.q}</h3><span class="plus" aria-hidden="true"></span></summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

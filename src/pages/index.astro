@@ -1,0 +1,187 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import OrbitVisual from "../components/OrbitVisual.astro";
+import SolutionFinder from "../components/SolutionFinder.astro";
+import CtaBand from "../components/CtaBand.astro";
+import { SERVICES, serviceUrl } from "../data/services";
+import { PROCESS, ENGAGEMENT_MODELS } from "../data/site";
+
+const problems = [
+  { quote: "Our team spends hours on repetitive manual work.", text: "Automate data entry, approvals and reporting so people focus on higher-value work.", slug: "ai-business-automation" },
+  { quote: "Our systems are outdated and don't connect.", text: "Modernise legacy software and integrate tools so information flows where it's needed.", slug: "it-technology" },
+  { quote: "Customer support can't keep up with demand.", text: "Add trained, dedicated teams with documented processes and clear reporting.", slug: "bpo-global-services" },
+  { quote: "Deliveries are late and we can't see where things are.", text: "Improve coordination, tracking and planning across your supply chain.", slug: "logistics-supply-chain" },
+  { quote: "Our people need new skills to keep pace.", text: "Practical training in technology, AI and professional skills that sticks.", slug: "education-training" },
+  { quote: "We're juggling too many different vendors.", text: "One accountable partner across technology, automation, operations and training.", slug: "" },
+];
+const differentiators = [
+  { icon: "infinity", title: "One accountable partner", text: "Five capabilities under one roof, coordinated by a single team — fewer hand-offs, clearer ownership." },
+  { icon: "target", title: "Practical, outcome-first", text: "We start from the business result you need, then choose the technology and people to deliver it." },
+  { icon: "team", title: "Technology with people", text: "Automation where it helps, skilled people where judgement matters — designed to work together." },
+  { icon: "growth", title: "Built for the long term", text: "Solutions that are documented, supported and designed to keep improving as you grow." },
+];
+const capabilities = ["Custom software", "AI & automation", "Cloud platforms", "Customer experience", "Back-office operations", "Freight & warehousing", "Supply-chain visibility", "Corporate training", "AI skills"];
+---
+<Base
+  title="Etrynity — Technology, AI Automation & Business Services"
+  fullTitle
+  description="IT, AI automation, BPO, logistics and training from one partner. Etrynity helps businesses solve practical challenges and grow with confidence."
+>
+  <section class="hero" aria-labelledby="hero-title">
+    <canvas class="hero-canvas" data-neural aria-hidden="true"></canvas>
+    <div class="container">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <span class="eyebrow">Technology · Automation · Operations</span>
+          <h1 class="display" id="hero-title" data-cascade>Building What's Next, <em>Together.</em></h1>
+          <p class="lead">Etrynity brings technology, intelligent automation and operational expertise together to help businesses solve practical challenges and grow with confidence.</p>
+          <div class="btn-row">
+            <a class="btn btn--gold" href="/services">Explore our services <Icon name="arrow" class="" strokeWidth={1.6} /></a>
+            <a class="btn btn--outline" href="/contact">Discuss your project</a>
+          </div>
+          <button type="button" class="ai-pill" data-ai-open><span class="live-dot" aria-hidden="true"></span>Ask Etrynity AI about your challenge</button>
+        </div>
+        <OrbitVisual />
+      </div>
+    </div>
+  </section>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      {[...capabilities, ...capabilities].map((c) => <span>{c.toUpperCase()}</span>)}
+    </div>
+  </div>
+
+  <section class="section" aria-labelledby="what-title">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">What we do</span>
+          <h2 class="title" id="what-title">Five capabilities. <em>One partner.</em></h2>
+        </div>
+        <p class="lead">From the software that runs your business to the people who operate and grow it, Etrynity brings every capability together — so solutions work as one.</p>
+      </div>
+      <div class="grid grid-3" data-reveal-group>
+        {SERVICES.map((s, i) => (
+          <a class="card" href={serviceUrl(s.slug)}>
+            <span class="num">0{i + 1}</span>
+            <Icon name={s.icon} />
+            <h3 class="h3">{s.name}</h3>
+            <p>{s.summary}</p>
+            <ul>{s.highlights.map((h) => <li>{h}</li>)}</ul>
+            <span class="link-arrow">Explore {s.short} <Icon name="arrow" class="" strokeWidth={1.6} /></span>
+          </a>
+        ))}
+        <a class="card" href="/contact" style="justify-content:center;border-style:dashed">
+          <Icon name="spark" />
+          <h3 class="h3">Not sure where you fit?</h3>
+          <p>Describe your challenge and we'll point you to the right team — or combine several.</p>
+          <span class="link-arrow">Talk to us <Icon name="arrow" class="" strokeWidth={1.6} /></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--ivory" aria-labelledby="problems-title">
+    <div class="container">
+      <div class="section-head center">
+        <span class="eyebrow">Problems we solve</span>
+        <h2 class="title" id="problems-title">Practical answers to <em>everyday business challenges.</em></h2>
+        <p class="lead">Most of our work starts with a familiar frustration. Here's where we usually help.</p>
+      </div>
+      <div class="grid grid-3" data-reveal-group>
+        {problems.map((p) => {
+          const s = SERVICES.find((x) => x.slug === p.slug);
+          return (
+            <a class="problem" href={s ? serviceUrl(s.slug) : "/our-approach"}>
+              <q>{p.quote}</q>
+              <p>{p.text}</p>
+              <span class="solution"><Icon name={s ? s.icon : "infinity"} class="" />{s ? s.name : "Etrynity as one partner"}</span>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--deep" id="ai" aria-labelledby="ai-title">
+    <div class="grid-bg" aria-hidden="true"></div>
+    <div class="container">
+      <div class="split">
+        <div class="stack">
+          <span class="eyebrow">AI solution finder</span>
+          <h2 class="title" id="ai-title">Describe your challenge. <em>Get a starting plan.</em></h2>
+          <p class="lead">Etrynity AI maps your challenge to the right teams and suggests how we would begin — a quick way to see where we can help before you talk to us.</p>
+          <p class="muted" style="font-size:18px">We can help you <strong class="rotator" data-rotator style="color:var(--gold-light);font-weight:600"><span>automate repetitive work.</span><span>modernise legacy systems.</span><span>scale customer support.</span><span>improve delivery visibility.</span><span>upskill teams for AI.</span></strong></p>
+          <a class="link-arrow" href="/services/ai-business-automation">About our AI services <Icon name="arrow" class="" strokeWidth={1.6} /></a>
+        </div>
+        <SolutionFinder />
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="why-title">
+    <div class="container">
+      <div class="split split--top">
+        <div class="section-head" style="margin-bottom:0">
+          <span class="eyebrow">Why Etrynity</span>
+          <h2 class="title" id="why-title">A partner built for <em>the long run.</em></h2>
+          <p class="lead">Our name and our infinity emblem stand for a simple promise: long-term value, continuous growth and a future without limits.</p>
+          <a class="link-arrow" href="/about">More about Etrynity <Icon name="arrow" class="" strokeWidth={1.6} /></a>
+        </div>
+        <div class="tile-grid" data-reveal-group>
+          {differentiators.map((d) => (
+            <div class="tile">
+              <Icon name={d.icon} />
+              <h3>{d.title}</h3>
+              <p>{d.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--ivory" aria-labelledby="approach-title">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">Our approach</span>
+          <h2 class="title" id="approach-title">A clear path from <em>idea to impact.</em></h2>
+        </div>
+        <a class="link-arrow" href="/our-approach">How we work <Icon name="arrow" class="" strokeWidth={1.6} /></a>
+      </div>
+      <ol class="steps" data-reveal-group>
+        {PROCESS.map((p) => (
+          <li>
+            <span class="step-num" aria-hidden="true">{p.step}</span>
+            <h3>{p.name}</h3>
+            <p>{p.summary}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="work-title">
+    <div class="container">
+      <div class="section-head center">
+        <span class="eyebrow">Working with us</span>
+        <h2 class="title" id="work-title">Start small. <em>Grow together.</em></h2>
+        <p class="lead">Every engagement begins with a conversation about your goals. From there, we agree the model that fits.</p>
+      </div>
+      <div class="grid grid-3" data-reveal-group>
+        {ENGAGEMENT_MODELS.map((m, i) => (
+          <div class="card">
+            <span class="num">0{i + 1}</span>
+            <h3 class="h3">{m.name}</h3>
+            <p>{m.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>

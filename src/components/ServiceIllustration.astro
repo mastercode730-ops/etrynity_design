@@ -1,0 +1,20 @@
+---
+import type { IconName } from "../data/services";
+import ItIllustration from "./illustrations/ItIllustration.astro";
+import AiIllustration from "./illustrations/AiIllustration.astro";
+import BpoIllustration from "./illustrations/BpoIllustration.astro";
+import LogisticsIllustration from "./illustrations/LogisticsIllustration.astro";
+import EducationIllustration from "./illustrations/EducationIllustration.astro";
+
+interface Props { kind: IconName; id?: string }
+const { kind, id } = Astro.props;
+const map = {
+  it: ItIllustration,
+  ai: AiIllustration,
+  bpo: BpoIllustration,
+  logistics: LogisticsIllustration,
+  education: EducationIllustration,
+};
+const Component = map[kind];
+---
+<Component id={id ?? `ill-${kind}`} />

@@ -1,0 +1,24 @@
+---
+// Shown after a contact form is submitted without JavaScript.
+import Base from "../../layouts/Base.astro";
+import Icon from "../../components/Icon.astro";
+import { SITE } from "../../data/site";
+---
+<Base title="Thank you" description="Your enquiry has been sent to Etrynity." noindex>
+  <section class="section">
+    <div class="container">
+      <div class="stack center" style="max-width:680px;text-align:center">
+        <Icon name="check" class="" strokeWidth={1} />
+        <h1 class="display" style="font-size:clamp(42px,6vw,76px)">Thank you — <em>message sent.</em></h1>
+        <p class="lead">Your enquiry has reached our team at {SITE.email}. We'll reply to you by email.</p>
+        <div class="btn-row" style="justify-content:center">
+          <a class="btn btn--gold" href="/">Back to home</a>
+          <a class="btn btn--outline" href="/services">Explore our services</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .stack :global(svg) { width: 64px; height: 64px; color: var(--gold); }
+</style>

@@ -1,0 +1,26 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import ContentArticle from "../../components/ContentArticle.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("insights", (e) => !e.data.draft);
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+interface Props { post: CollectionEntry<"insights"> }
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+<ContentArticle
+  section={{ name: "Insights", href: "/insights" }}
+  url={`/insights/${post.id}`}
+  title={post.data.title}
+  description={post.data.description}
+  date={post.data.date}
+  updated={post.data.updated}
+  author={post.data.author}
+  services={post.data.services}
+  kicker="Insights"
+  schemaType="BlogPosting"
+>
+  <Content />
+</ContentArticle>

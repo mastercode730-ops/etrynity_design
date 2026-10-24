@@ -1,0 +1,140 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import Faq from "../components/Faq.astro";
+import CtaBand from "../components/CtaBand.astro";
+import { PROCESS, ENGAGEMENT_MODELS } from "../data/site";
+
+const crumbs = [{ name: "Home", href: "/" }, { name: "Our Approach", href: "/our-approach" }];
+const principles = [
+  { icon: "eye", title: "Listen first", text: "We understand the problem behind the request before proposing anything." },
+  { icon: "target", title: "Outcome-focused", text: "Success is defined in business terms and agreed before work begins." },
+  { icon: "chat", title: "Transparent by default", text: "Clear plans, honest estimates and regular progress you can see." },
+  { icon: "infinity", title: "Built to last", text: "Documented, supported solutions designed to keep improving." },
+];
+const firstSteps = [
+  { title: "Share your challenge", text: "Send an enquiry through the contact form or email us with a few details about your goals." },
+  { title: "We reply by email", text: "A member of our team reviews it and replies with questions or suggested times to talk." },
+  { title: "Discovery conversation", text: "We explore the problem, your constraints and what success looks like." },
+  { title: "A clear proposal", text: "You receive a phased plan with scope, milestones and estimates — no commitment until you're ready." },
+];
+const faqs = [
+  { q: "How do we get started?", a: "Send us a short description of your challenge through the contact form or by email. We'll reply to arrange a discovery conversation and take it from there." },
+  { q: "Do we have to commit to a large project?", a: "No. Many engagements start with a focused first phase or pilot so you can see results before deciding on anything bigger." },
+  { q: "Can you work alongside our in-house team?", a: "Yes. We regularly fit around existing teams — filling capability gaps, adding capacity or leading specific workstreams." },
+  { q: "What should we prepare before the first conversation?", a: "Nothing formal. A short description of the problem, what you've tried so far and what a good outcome would look like is enough to start." },
+  { q: "Can one engagement cover several of your services?", a: "Yes. Because our divisions work as one team, we can combine technology, automation, operations, logistics and training around a single goal." },
+];
+---
+<Base
+  title="Our Approach — How Etrynity Works With Clients"
+  description="How Etrynity works: a clear Discover, Design, Deliver and Grow process, flexible engagement models and transparent communication from day one."
+  breadcrumbs={crumbs}
+>
+  <section class="page-hero" aria-labelledby="page-title">
+    <div class="container">
+      <div class="page-hero-inner page-hero-inner--single">
+        <div class="stack">
+          <Breadcrumbs items={crumbs} />
+          <span class="eyebrow">Our approach</span>
+          <h1 class="display" id="page-title" data-cascade>How we work — <em>clear, practical, accountable.</em></h1>
+          <p class="lead">Every engagement follows the same disciplined path, whatever the industry or the size of the challenge. You always know what is happening, why, and what comes next.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="principles-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Principles</span>
+        <h2 class="title" id="principles-title">What guides <em>every engagement.</em></h2>
+      </div>
+      <div class="tile-grid" data-reveal-group>
+        {principles.map((p) => (
+          <div class="tile">
+            <Icon name={p.icon} />
+            <h3>{p.title}</h3>
+            <p>{p.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--deep" aria-labelledby="process-title">
+    <div class="container">
+      <div class="section-head center">
+        <span class="eyebrow">The process</span>
+        <h2 class="title" id="process-title">Discover. Design. Deliver. <em>Grow.</em></h2>
+      </div>
+      <div class="phases">
+        {PROCESS.map((p) => (
+          <article class="phase" data-reveal aria-labelledby={`phase-${p.step}`}>
+            <span class="phase-num" aria-hidden="true">{p.step}</span>
+            <div class="stack-sm">
+              <h3 class="h3" id={`phase-${p.step}`}>{p.name}</h3>
+              <p class="lead" style="font-size:17px">{p.detail}</p>
+            </div>
+            <div class="stack-sm">
+              <span class="label" style="color:var(--gold)">You get</span>
+              <ul class="checklist" style="grid-template-columns:1fr">
+                {p.deliverables.map((d) => <li>{d}</li>)}
+              </ul>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--ivory" aria-labelledby="models-title">
+    <div class="container">
+      <div class="section-head center">
+        <span class="eyebrow">Engagement models</span>
+        <h2 class="title" id="models-title">Choose how <em>we work together.</em></h2>
+        <p class="lead">We agree the model that fits your goals, budget and team — and adjust it as your needs evolve.</p>
+      </div>
+      <div class="grid grid-3" data-reveal-group>
+        {ENGAGEMENT_MODELS.map((m) => (
+          <div class="model">
+            <h3>{m.name}</h3>
+            <p>{m.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="start-title">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">Getting started</span>
+          <h2 class="title" id="start-title">What happens <em>after you get in touch.</em></h2>
+        </div>
+        <a class="btn btn--gold" href="/contact">Start the conversation <Icon name="arrow" class="" strokeWidth={1.6} /></a>
+      </div>
+      <ol class="steps" data-reveal-group>
+        {firstSteps.map((f, i) => (
+          <li>
+            <span class="step-num" aria-hidden="true">0{i + 1}</span>
+            <h3>{f.title}</h3>
+            <p>{f.text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <Faq faqs={faqs} title="Working with Etrynity" />
+  <CtaBand />
+</Base>
+<style>
+  .phases { display: flex; flex-direction: column; }
+  .phase { display: grid; grid-template-columns: 120px minmax(0, 1.4fr) minmax(0, 1fr); gap: 24px 48px; padding: 44px 0; border-top: 1px solid var(--line-strong); align-items: start; }
+  .phase:last-child { border-bottom: 1px solid var(--line-strong); }
+  .phase-num { font-family: var(--font-display); font-size: 72px; line-height: 0.9; color: var(--gold); }
+  @media (max-width: 860px) { .phase { grid-template-columns: 1fr; gap: 16px; } .phase-num { font-size: 52px; } }
+</style>

@@ -1,0 +1,60 @@
+---
+import { Picture } from "astro:assets";
+import emblem from "../assets/emblem.png";
+import Icon from "./Icon.astro";
+import { SERVICES, serviceUrl } from "../data/services";
+import { SITE } from "../data/site";
+
+import { published } from "../data/content";
+
+const year = new Date().getFullYear();
+const counts = await published;
+const hasInsights = counts.insights > 0;
+const hasCaseStudies = counts.caseStudies > 0;
+---
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/" aria-label="Etrynity — home">
+          <Picture src={emblem} formats={["avif", "webp"]} widths={[56, 112]} sizes="56px" alt="" loading="lazy" />
+          <span class="brand-text"><span class="wordmark">ETRYNITY</span><small>INFINITE POSSIBILITIES</small></span>
+        </a>
+        <p class="muted">Technology, intelligent automation and operational expertise — brought together to help businesses grow with confidence.</p>
+        <p class="script">Together for a better future</p>
+      </div>
+      <div class="footer-col">
+        <h2>Services</h2>
+        <ul>
+          {SERVICES.map((s) => <li><a href={serviceUrl(s.slug)}>{s.name}</a></li>)}
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h2>Company</h2>
+        <ul>
+          <li><a href="/about">About us</a></li>
+          <li><a href="/our-approach">Our approach</a></li>
+          <li><a href="/services">All services</a></li>
+          {hasCaseStudies && <li><a href="/case-studies">Case studies</a></li>}
+          {hasInsights && <li><a href="/insights">Insights</a></li>}
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h2>Contact</h2>
+        <ul>
+          <li><a class="social" href={`mailto:${SITE.email}`}><Icon name="mail" class="" />{SITE.email}</a></li>
+          <li><a class="social" href={SITE.instagram.url} rel="noopener" target="_blank"><Icon name="instagram" class="" />{SITE.instagram.handle}<span class="sr-only"> on Instagram (opens in a new tab)</span></a></li>
+          <li><a href="/contact">Send an enquiry</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© {year} {SITE.legalName}. All rights reserved.</span>
+      <span>
+        <a href="/privacy-policy">Privacy policy</a>
+        {import.meta.env.PUBLIC_GA_ID && <> · <a href="/privacy-policy#cookies" data-cookie-settings>Cookie settings</a></>}
+      </span>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,31 @@
+---
+import { Picture } from "astro:assets";
+import emblem from "../assets/emblem.png";
+import Icon from "./Icon.astro";
+import { SERVICES, serviceUrl } from "../data/services";
+
+const tiny = { it: "IT", ai: "AI", bpo: "BPO", logistics: "Logistics", education: "Education" };
+---
+<div class="orbit-visual">
+  <svg class="orbits" viewBox="0 0 500 500" aria-hidden="true">
+    <circle class="orbit-ring" cx="250" cy="250" r="236" />
+    <circle class="orbit-ring" cx="250" cy="250" r="176" stroke-dasharray="2 8" />
+    <circle class="orbit-ring" cx="250" cy="250" r="116" />
+    <circle class="orbit-dash" cx="250" cy="250" r="236" stroke-dasharray="90 1393" style="animation: orbit-a 14s linear infinite" />
+    <circle class="orbit-dash" cx="250" cy="250" r="176" stroke-dasharray="50 1056" style="animation: orbit-b 10s linear infinite reverse" />
+  </svg>
+  <div class="orbit-emblem">
+    <Picture src={emblem} formats={["avif", "webp"]} widths={[260, 400, 520]} sizes="(max-width: 960px) 46vw, 260px" alt="Etrynity infinity emblem in metallic gold" loading="eager" fetchpriority="high" />
+  </div>
+  {SERVICES.map((s) => (
+    <a class="orbit-chip" href={serviceUrl(s.slug)} aria-label={s.name}>
+      <Icon name={s.icon} />
+      <span class="chip-long">{s.short}</span>
+      <span class="chip-short" aria-hidden="true">{tiny[s.icon]}</span>
+    </a>
+  ))}
+</div>
+<style>
+  @keyframes orbit-a { to { stroke-dashoffset: -1483; } }
+  @keyframes orbit-b { to { stroke-dashoffset: -1106; } }
+</style>

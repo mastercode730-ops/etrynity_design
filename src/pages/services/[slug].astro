@@ -1,0 +1,184 @@
+---
+import Base from "../../layouts/Base.astro";
+import Icon from "../../components/Icon.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import ServiceIllustration from "../../components/ServiceIllustration.astro";
+import Faq from "../../components/Faq.astro";
+import CtaBand from "../../components/CtaBand.astro";
+import SolutionFinder from "../../components/SolutionFinder.astro";
+import { SERVICES, serviceBySlug, serviceUrl, type Service } from "../../data/services";
+
+export function getStaticPaths() {
+  return SERVICES.map((service) => ({ params: { slug: service.slug }, props: { service } }));
+}
+
+interface Props { service: Service }
+const { service: s } = Astro.props;
+const url = new URL(serviceUrl(s.slug), Astro.site).href;
+const crumbs = [
+  { name: "Home", href: "/" },
+  { name: "Services", href: "/services" },
+  { name: s.name, href: serviceUrl(s.slug) },
+];
+const related = s.related.map((slug) => serviceBySlug(slug)!).filter(Boolean);
+const origin = Astro.site!.origin;
+const schema = [
+  {
+    "@type": "Service",
+    "@id": `${url}#service`,
+    name: s.name,
+    serviceType: s.name,
+    description: s.seo.description,
+    url,
+    provider: { "@id": `${origin}/#organization` },
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: `${s.name} services`,
+      itemListElement: s.offerings.map((o) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name: o.title, description: o.text } })),
+    },
+  },
+  {
+    "@type": "FAQPage",
+    "@id": `${url}#faq`,
+    mainEntity: s.faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+  },
+];
+const isAi = s.slug === "ai-business-automation";
+---
+<Base title={s.seo.title} description={s.seo.description} breadcrumbs={crumbs} schema={schema}>
+  <section class="page-hero" aria-labelledby="page-title">
+    <div class="container">
+      <div class="page-hero-inner">
+        <div class="stack">
+          <Breadcrumbs items={crumbs} />
+          <span class="motto">{s.motto}</span>
+          <h1 class="display" id="page-title" data-cascade>{s.heading}</h1>
+          <p class="lead">{s.lead}</p>
+          <div class="btn-row">
+            <a class="btn btn--gold" href={`/contact?service=${s.slug}`}>Discuss your project <Icon name="arrow" class="" strokeWidth={1.6} /></a>
+            <button class="btn btn--outline" type="button" data-ask={`How could Etrynity's ${s.name} team help my business?`}>Ask Etrynity AI</button>
+          </div>
+        </div>
+        <ServiceIllustration kind={s.icon} id="hero-ill" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="challenges-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Challenges we solve</span>
+        <h2 class="title" id="challenges-title">Does this <em>sound familiar?</em></h2>
+      </div>
+      <div class="tile-grid" data-reveal-group>
+        {s.challenges.map((c) => (
+          <div class="tile">
+            <h3>{c.title}</h3>
+            <p>{c.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--ivory" aria-labelledby="offerings-title">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">What we offer</span>
+          <h2 class="title" id="offerings-title">{s.name} <em>services</em></h2>
+        </div>
+        <p class="lead">Each engagement is shaped around your goals — combine the services you need, or start with one.</p>
+      </div>
+      <div class="grid grid-3" data-reveal-group>
+        {s.offerings.map((o) => (
+          <div class="card">
+            <h3 class="h3">{o.title}</h3>
+            <p>{o.text}</p>
+            <ul>{o.points.map((p) => <li>{p}</li>)}</ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="benefits-title">
+    <div class="container">
+      <div class="split split--top">
+        <div class="section-head" style="margin-bottom:0">
+          <span class="eyebrow">Key benefits</span>
+          <h2 class="title" id="benefits-title">What you can <em>expect from us.</em></h2>
+          <p class="lead">Practical results, clear communication and a partner who stays accountable after launch.</p>
+        </div>
+        <div class="tile-grid" data-reveal-group>
+          {s.benefits.map((b) => (
+            <div class="tile">
+              <Icon name="check" />
+              <h3>{b.title}</h3>
+              <p>{b.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--deep" aria-labelledby="steps-title">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <span class="eyebrow">How an engagement works</span>
+          <h2 class="title" id="steps-title">From first conversation <em>to lasting results.</em></h2>
+        </div>
+        <a class="link-arrow" href="/our-approach">Our approach <Icon name="arrow" class="" strokeWidth={1.6} /></a>
+      </div>
+      <ol class="steps" data-reveal-group>
+        {s.steps.map((st, i) => (
+          <li>
+            <span class="step-num" aria-hidden="true">0{i + 1}</span>
+            <h3>{st.name}</h3>
+            <p>{st.text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  {isAi && (
+    <section class="section" aria-labelledby="try-title">
+      <div class="container">
+        <div class="split">
+          <div class="stack">
+            <span class="eyebrow">See it in action</span>
+            <h2 class="title" id="try-title">Try <em>Etrynity AI</em> yourself.</h2>
+            <p class="lead">The assistant and Solution Finder on this website are examples of what we build: AI that answers from approved information, streams responses and hands over to people when it should.</p>
+          </div>
+          <SolutionFinder />
+        </div>
+      </div>
+    </section>
+  )}
+
+  <Faq faqs={s.faqs} title={`${s.name}: common questions`} />
+
+  <section class="section section--tight" aria-labelledby="related-title">
+    <div class="container">
+      <div class="section-head" style="margin-bottom:32px">
+        <span class="eyebrow">Works well with</span>
+        <h2 class="title title--sm" id="related-title">Related services</h2>
+      </div>
+      <div class="grid grid-2">
+        {related.map((r) => (
+          <a class="card" href={serviceUrl(r.slug)}>
+            <Icon name={r.icon} />
+            <h3 class="h3">{r.name}</h3>
+            <p>{r.summary}</p>
+            <span class="link-arrow">Explore {r.short} <Icon name="arrow" class="" strokeWidth={1.6} /></span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CtaBand title={`Ready to talk about ${s.short}?`} emphasis="Let's begin." text="Share a few details about your goals. We'll come back with questions, ideas and a practical next step." />
+</Base>

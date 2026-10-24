@@ -1,0 +1,143 @@
+---
+import { Picture } from "astro:assets";
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import CtaBand from "../components/CtaBand.astro";
+import emblem from "../assets/emblem.png";
+import skyline from "../assets/skyline.jpg";
+import { PILLARS } from "../data/site";
+import { SERVICES, serviceUrl } from "../data/services";
+
+const crumbs = [{ name: "Home", href: "/" }, { name: "About", href: "/about" }];
+const meaning = [
+  { icon: "infinity", title: "Infinity", text: "A long-term vision — we build relationships and solutions designed to last." },
+  { icon: "layers", title: "Layered lines", text: "Multiple industries woven together into one company and one standard." },
+  { icon: "growth", title: "Upward flow", text: "Growth and progress — for our clients, their people and their communities." },
+  { icon: "letter", title: "The letter E", text: "Our identity, and the excellence we hold ourselves to in everything we do." },
+];
+---
+<Base
+  title="About Etrynity — Our Story, Mission & Values"
+  description="What Etrynity stands for: technology, intelligent automation and operational expertise in one partner, built on long-term value and continuous growth."
+  pageType="AboutPage"
+  breadcrumbs={crumbs}
+>
+  <section class="page-hero" aria-labelledby="page-title">
+    <div class="container">
+      <div class="page-hero-inner">
+        <div class="stack">
+          <Breadcrumbs items={crumbs} />
+          <span class="eyebrow">About Etrynity</span>
+          <h1 class="display" id="page-title" data-cascade>More than a name — <em>a promise.</em></h1>
+          <p class="lead">Etrynity stands for endless possibilities, continuous growth and a future without limits. We bring technology, intelligent automation and operational expertise together to help businesses solve practical challenges and grow with confidence.</p>
+        </div>
+        <div class="illustration" style="max-width:420px">
+          <Picture src={emblem} formats={["avif", "webp"]} widths={[420, 640, 791]} sizes="(max-width: 960px) 80vw, 420px" alt="The Etrynity infinity emblem in metallic gold" loading="eager" class="float-emblem" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="story-title">
+    <div class="container">
+      <div class="split">
+        <div data-reveal>
+          <Picture src={skyline} formats={["avif", "webp"]} widths={[480, 594]} sizes="(max-width: 900px) 90vw, 560px" alt="A city skyline at sunrise above a glowing, connected globe — representing Etrynity's global mindset" loading="lazy" style="width:100%;height:auto;border:1px solid var(--line)" />
+        </div>
+        <div class="stack" data-reveal>
+          <span class="eyebrow">Our story</span>
+          <h2 class="title" id="story-title">Built on a simple belief: <em>growth should never stop.</em></h2>
+          <p class="lead">Businesses shouldn't need a different partner for every challenge. Etrynity was created to bring technology, automation, operations, logistics and learning together under one name — and one standard of excellence.</p>
+          <p class="muted">We combine innovation, expertise and a global mindset to create sustainable solutions across industries. Our focus is practical: understand the problem properly, deliver solutions that work in the real world, and keep improving them over time.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--ivory" aria-labelledby="mission-title">
+    <div class="container">
+      <h2 class="sr-only" id="mission-title">Mission and vision</h2>
+      <div class="grid grid-2" data-reveal-group>
+        <div class="card">
+          <span class="eyebrow">Our mission</span>
+          <p class="h3" style="font-weight:500;font-size:clamp(26px,2.6vw,36px)">To create long-term value for our clients and communities through technology, people and progress.</p>
+        </div>
+        <div class="card">
+          <span class="eyebrow">Our vision</span>
+          <p class="h3" style="font-weight:500;font-size:clamp(26px,2.6vw,36px)">A future without limits, where every business and every person can reach their full potential.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--deep" aria-labelledby="emblem-title">
+    <div class="container">
+      <div class="section-head center">
+        <span class="eyebrow">The emblem</span>
+        <h2 class="title" id="emblem-title">Every curve <em>carries a meaning.</em></h2>
+      </div>
+      <div class="split">
+        <div style="max-width:440px;margin:0 auto" data-reveal>
+          <Picture src={emblem} formats={["avif", "webp"]} widths={[440, 791]} sizes="(max-width: 900px) 80vw, 440px" alt="Close-up of the Etrynity infinity emblem" loading="lazy" class="float-emblem" />
+        </div>
+        <div class="tile-grid" data-reveal-group>
+          {meaning.map((m) => (
+            <div class="tile">
+              <Icon name={m.icon} />
+              <h3>{m.title}</h3>
+              <p>{m.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="values-title">
+    <div class="container">
+      <div class="split split--top">
+        <div class="section-head" style="margin-bottom:0">
+          <span class="eyebrow">What drives us</span>
+          <h2 class="title" id="values-title">Four words <em>we build on.</em></h2>
+          <p class="lead">Every engagement, in every division, is measured against the same four principles.</p>
+        </div>
+        <div class="pillars" data-reveal-group>
+          {PILLARS.map((p, i) => (
+            <div class="pillar">
+              <span aria-hidden="true">0{i + 1}</span>
+              <h3>{p.name.toUpperCase()}</h3>
+              <p>{p.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--ivory section--tight" aria-labelledby="divisions-title">
+    <div class="container">
+      <div class="section-head section-head--split" style="margin-bottom:36px">
+        <div>
+          <span class="eyebrow">Our divisions</span>
+          <h2 class="title title--sm" id="divisions-title">What we do</h2>
+        </div>
+        <a class="link-arrow" href="/services">All services <Icon name="arrow" class="" strokeWidth={1.6} /></a>
+      </div>
+      <div class="grid grid-3" data-reveal-group>
+        {SERVICES.map((s) => (
+          <a class="card" href={serviceUrl(s.slug)}>
+            <Icon name={s.icon} />
+            <h3 class="h3">{s.name}</h3>
+            <p>{s.summary}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+<style>
+  :global(.float-emblem) { width: 100%; height: auto; animation: float 8s ease-in-out infinite; filter: drop-shadow(0 24px 50px rgba(201, 164, 106, 0.25)); }
+</style>

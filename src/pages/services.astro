@@ -1,0 +1,90 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import ServiceIllustration from "../components/ServiceIllustration.astro";
+import CtaBand from "../components/CtaBand.astro";
+import { SERVICES, serviceUrl } from "../data/services";
+
+const crumbs = [{ name: "Home", href: "/" }, { name: "Services", href: "/services" }];
+const combos = [
+  { title: "Launching a digital product", text: "IT builds the platform, AI automates support and onboarding, BPO staffs customer care, and training gets your team ready on day one.", tags: ["IT", "AI", "BPO", "Training"] },
+  { title: "Scaling operations efficiently", text: "Documented processes and dedicated teams, with automation removing repetitive steps and reporting that shows what is improving.", tags: ["BPO", "AI"] },
+  { title: "Making the supply chain visible", text: "Logistics coordination combined with tracking data, dashboards and forecasting so you can plan instead of react.", tags: ["Logistics", "IT", "AI"] },
+];
+const schema = [
+  {
+    "@type": "ItemList",
+    name: "Etrynity services",
+    itemListElement: SERVICES.map((s, i) => ({ "@type": "ListItem", position: i + 1, name: s.name, url: new URL(serviceUrl(s.slug), Astro.site).href })),
+  },
+];
+---
+<Base
+  title="Our Services: IT, AI, BPO, Logistics & Training"
+  description="Explore Etrynity's five divisions: IT & technology, AI & business automation, BPO & global services, logistics & supply chain, and education & training."
+  pageType="CollectionPage"
+  breadcrumbs={crumbs}
+  schema={schema}
+>
+  <section class="page-hero" aria-labelledby="page-title">
+    <div class="container">
+      <div class="page-hero-inner page-hero-inner--single">
+        <div class="stack">
+          <Breadcrumbs items={crumbs} />
+          <span class="eyebrow">Our services</span>
+          <h1 class="display" id="page-title" data-cascade>Five divisions, <em>delivered as one.</em></h1>
+          <p class="lead">Whether you need to build a platform, automate a process, scale a team, move goods or grow skills, Etrynity brings the expertise — and the long-term commitment — under one roof.</p>
+          <div class="btn-row">
+            <a class="btn btn--gold" href="/contact">Discuss your project <Icon name="arrow" class="" strokeWidth={1.6} /></a>
+            <button class="btn btn--outline" type="button" data-ask="Which Etrynity service fits my business?">Ask Etrynity AI</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-label="All services">
+    <div class="container">
+      {SERVICES.map((s, i) => (
+        <article class="service-row" aria-labelledby={`svc-${s.slug}`}>
+          <div class="service-row-visual" data-reveal>
+            <ServiceIllustration kind={s.icon} id={`svc-ill-${s.icon}`} />
+          </div>
+          <div class="stack" data-reveal>
+            <span class="motto">0{i + 1} · {s.motto}</span>
+            <h2 class="title title--sm" id={`svc-${s.slug}`}>{s.name}</h2>
+            <p class="lead">{s.lead}</p>
+            <ul class="checklist">
+              {s.offerings.slice(0, 4).map((o) => <li>{o.title}</li>)}
+            </ul>
+            <div class="btn-row">
+              <a class="btn btn--outline" href={serviceUrl(s.slug)}>Explore {s.short}<span class="sr-only"> services</span> <Icon name="arrow" class="" strokeWidth={1.6} /></a>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section section--ivory" aria-labelledby="combined-title">
+    <div class="container">
+      <div class="section-head center">
+        <span class="eyebrow">Better together</span>
+        <h2 class="title" id="combined-title">When challenges cross <em>more than one area.</em></h2>
+        <p class="lead">Real business problems rarely fit neatly into one category. Because our divisions work as one, we can combine them around the outcome you need.</p>
+      </div>
+      <div class="grid grid-3" data-reveal-group>
+        {combos.map((c) => (
+          <div class="card">
+            <h3 class="h3">{c.title}</h3>
+            <p>{c.text}</p>
+            <ul>{c.tags.map((t) => <li>{t}</li>)}</ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CtaBand title="Tell us what you're working on —" emphasis="we'll find the right fit." />
+</Base>

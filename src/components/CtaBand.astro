@@ -1,0 +1,32 @@
+---
+import { Picture } from "astro:assets";
+import emblem from "../assets/emblem.png";
+import Icon from "./Icon.astro";
+import { SITE } from "../data/site";
+
+interface Props {
+  title?: string;
+  emphasis?: string;
+  text?: string;
+}
+const {
+  title = "Let's build what's next,",
+  emphasis = "together.",
+  text = "Tell us about the challenge you're facing. We'll listen, ask the right questions and show you a practical way forward.",
+} = Astro.props;
+---
+<section class="section cta-band" aria-labelledby="cta-title">
+  <Picture src={emblem} formats={["avif", "webp"]} widths={[560]} sizes="560px" alt="" class="watermark" loading="lazy" />
+  <div class="container">
+    <div class="inner" data-reveal>
+      <Picture src={emblem} formats={["avif", "webp"]} widths={[96, 192]} sizes="96px" alt="" class="emblem" loading="lazy" />
+      <h2 class="title" id="cta-title">{title} <em>{emphasis}</em></h2>
+      <p class="lead">{text}</p>
+      <div class="btn-row" style="justify-content:center">
+        <a class="btn btn--gold" href="/contact">Discuss your project <Icon name="arrow" class="" strokeWidth={1.6} /></a>
+        <a class="btn btn--outline" href="/services">Explore our services</a>
+      </div>
+      <p class="contact-line">Prefer email? Write to <a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+    </div>
+  </div>
+</section>

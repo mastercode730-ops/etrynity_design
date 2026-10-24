@@ -1,0 +1,53 @@
+---
+// Listing page shared by insights and case studies.
+import type { Page } from "astro";
+import Base from "../layouts/Base.astro";
+import Breadcrumbs from "./Breadcrumbs.astro";
+import Icon from "./Icon.astro";
+
+interface Item { href: string; title: string; description: string; date: Date; meta?: string }
+interface Props {
+  name: string;
+  href: string;
+  heading: string;
+  description: string;
+  page: Page<Item>;
+}
+const { name, href, heading, description, page } = Astro.props;
+const crumbs = [{ name: "Home", href: "/" }, { name, href }];
+const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+---
+<Base title={page.currentPage > 1 ? `${name} — page ${page.currentPage}` : name} description={description} pageType="CollectionPage" breadcrumbs={crumbs}>
+  <section class="page-hero" aria-labelledby="page-title">
+    <div class="container">
+      <div class="page-hero-inner page-hero-inner--single">
+        <div class="stack">
+          <Breadcrumbs items={crumbs} />
+          <span class="eyebrow">{name}</span>
+          <h1 class="display" id="page-title" style="font-size:clamp(40px,5vw,72px)">{heading}</h1>
+          <p class="lead">{description}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <div class="grid grid-3">
+        {page.data.map((item) => (
+          <a class="card" href={item.href}>
+            <span class="muted" style="font-size:13px"><time datetime={item.date.toISOString()}>{fmt(item.date)}</time>{item.meta && ` · ${item.meta}`}</span>
+            <h2 class="h3">{item.title}</h2>
+            <p>{item.description}</p>
+            <span class="link-arrow">Read more <Icon name="arrow" class="" strokeWidth={1.6} /></span>
+          </a>
+        ))}
+      </div>
+      {(page.url.prev || page.url.next) && (
+        <nav class="btn-row" style="margin-top:48px;justify-content:space-between" aria-label="Pagination">
+          {page.url.prev ? <a class="btn btn--outline" href={page.url.prev}>Newer</a> : <span></span>}
+          {page.url.next && <a class="btn btn--outline" href={page.url.next}>Older</a>}
+        </nav>
+      )}
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,46 @@
+---
+interface Props { id?: string }
+const { id = "bpo" } = Astro.props;
+const points: [number, number][] = [[160, 196], [338, 168], [214, 318], [372, 300], [262, 246]];
+---
+<div class="illustration">
+  <svg viewBox="0 0 560 460" role="img" aria-labelledby={`${id}-t`}>
+    <title id={`${id}-t`}>Illustration: a globe connected by service routes, with support conversations handled by a dedicated team</title>
+    <defs>
+      <radialGradient id={`${id}-glow`}><stop offset="0" stop-color="#C9A46A" stop-opacity=".22" /><stop offset="1" stop-color="#C9A46A" stop-opacity="0" /></radialGradient>
+      <radialGradient id={`${id}-sphere`} cx=".35" cy=".3"><stop offset="0" stop-color="#13223A" /><stop offset="1" stop-color="#08111F" /></radialGradient>
+    </defs>
+    <circle cx="270" cy="244" r="230" fill={`url(#${id}-glow)`} />
+    <circle cx="270" cy="244" r="160" fill={`url(#${id}-sphere)`} stroke="#C9A46A" stroke-opacity=".7" stroke-width="1.4" />
+    <ellipse cx="270" cy="244" rx="62" ry="160" fill="none" stroke="#C9A46A" stroke-opacity=".25" />
+    <ellipse cx="270" cy="244" rx="118" ry="160" fill="none" stroke="#C9A46A" stroke-opacity=".2" />
+    <ellipse cx="270" cy="244" rx="160" ry="44" fill="none" stroke="#C9A46A" stroke-opacity=".25" />
+    <ellipse cx="270" cy="166" rx="136" ry="30" fill="none" stroke="#C9A46A" stroke-opacity=".18" />
+    <ellipse cx="270" cy="322" rx="136" ry="30" fill="none" stroke="#C9A46A" stroke-opacity=".18" />
+    <path class="flow" d="M160 196Q240 60 338 168" fill="none" stroke="#E2C792" stroke-width="1.6" />
+    <path class="flow" d="M214 318Q300 250 372 300" fill="none" stroke="#E2C792" stroke-width="1.6" />
+    <path class="flow" d="M262 246Q320 190 338 168" fill="none" stroke="#C9A46A" stroke-width="1.3" />
+    {points.map(([x, y]) => (
+      <g>
+        <circle class="pulse" cx={x} cy={y} r="9" fill="#E2C792" fill-opacity=".25" />
+        <circle cx={x} cy={y} r="4" fill="#E2C792" />
+      </g>
+    ))}
+    <g class="drift">
+      <rect x="370" y="44" width="170" height="78" rx="10" fill="#0F1D33" stroke="#C9A46A" stroke-opacity=".8" />
+      <circle cx="400" cy="83" r="17" fill="none" stroke="#C9A46A" />
+      <path d="M391 86v-3a9 9 0 0 1 18 0v3M390 85h3v6h-3zM407 85h3v6h-3z" fill="none" stroke="#E2C792" stroke-width="1.4" />
+      <rect x="428" y="70" width="90" height="7" rx="3.5" fill="#E2C792" fill-opacity=".85" />
+      <rect x="428" y="88" width="64" height="7" rx="3.5" fill="#C9A46A" fill-opacity=".45" />
+    </g>
+    <g class="drift" style="animation-delay:-4s">
+      <rect x="22" y="336" width="176" height="82" rx="10" fill="#0F1D33" stroke="#C9A46A" stroke-opacity=".8" />
+      <path d="M42 358h44v26H56l-14 10z" fill="none" stroke="#E2C792" stroke-width="1.4" />
+      <rect x="100" y="360" width="80" height="7" rx="3.5" fill="#E2C792" fill-opacity=".85" />
+      <rect x="100" y="378" width="56" height="7" rx="3.5" fill="#C9A46A" fill-opacity=".45" />
+      <circle cx="104" cy="400" r="3" fill="#5BE3A2" />
+      <text x="114" y="404" fill="#AAB4C3" font-family="Manrope Variable, Manrope, sans-serif" font-size="11">Resolved</text>
+    </g>
+    <circle cx="40" cy="70" r="2" fill="#C9A46A" /><circle cx="530" cy="300" r="2" fill="#C9A46A" />
+  </svg>
+</div>

@@ -1,0 +1,209 @@
+---
+import Icon from "./Icon.astro";
+import { SERVICES } from "../data/services";
+import { SITE } from "../data/site";
+
+const interests = [...SERVICES.map((s) => ({ value: s.slug, label: s.name })), { value: "other", label: "Something else" }];
+---
+<div class="form-panel">
+  <form class="form" data-contact-form novalidate action="/api/contact" method="post">
+    <div class="stack-sm">
+      <h2 class="h3" style="font-size:36px">Send us a message</h2>
+      <p class="muted" style="color:var(--slate);font-size:15px">Fields marked <span aria-hidden="true">*</span><span class="sr-only">with an asterisk</span> are required.</p>
+    </div>
+
+    <fieldset class="field">
+      <legend>I'm interested in</legend>
+      <div class="choice-group">
+        {interests.map((i) => (
+          <label class="choice">
+            <input type="checkbox" name="interests" value={i.value} />
+            <span>{i.label}</span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+
+    <div class="field-grid">
+      <div class="field">
+        <label for="cf-name">Full name *</label>
+        <input id="cf-name" name="name" type="text" autocomplete="name" required maxlength="120" aria-describedby="cf-name-err" />
+        <span class="field-error" id="cf-name-err" data-error-for="name"></span>
+      </div>
+      <div class="field">
+        <label for="cf-email">Email *</label>
+        <input id="cf-email" name="email" type="email" autocomplete="email" required maxlength="200" aria-describedby="cf-email-err" />
+        <span class="field-error" id="cf-email-err" data-error-for="email"></span>
+      </div>
+      <div class="field">
+        <label for="cf-company">Company</label>
+        <input id="cf-company" name="company" type="text" autocomplete="organization" maxlength="160" />
+      </div>
+      <div class="field">
+        <label for="cf-role">Your role</label>
+        <input id="cf-role" name="role" type="text" autocomplete="organization-title" maxlength="120" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="cf-message">How can we help? *</label>
+      <textarea id="cf-message" name="message" rows="5" required minlength="10" maxlength="5000" aria-describedby="cf-message-err" placeholder="A few lines about your goals, challenge or timeline"></textarea>
+      <span class="field-error" id="cf-message-err" data-error-for="message"></span>
+      <button type="button" class="ai-link" data-ai-draft style="align-self:flex-start;margin-top:6px;color:var(--bronze)"><Icon name="spark" class="" strokeWidth={1.5} /><span data-draft-label>Help me write this with AI</span></button>
+      <span class="field-error" data-draft-status style="color:var(--slate)"></span>
+    </div>
+
+    <div class="hp-field" aria-hidden="true">
+      <label for="cf-website">Leave this field empty</label>
+      <input id="cf-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+    </div>
+    <input type="hidden" name="startedAt" data-started-at />
+
+    <div class="field">
+      <label class="consent">
+        <input type="checkbox" name="consent" value="yes" required aria-describedby="cf-consent-err" />
+        <span style="text-transform:none;letter-spacing:0;font-weight:400;font-size:14.5px">I agree to Etrynity using these details to respond to my enquiry, as described in the <a href="/privacy-policy">privacy policy</a>. *</span>
+      </label>
+      <span class="field-error" id="cf-consent-err" data-error-for="consent"></span>
+    </div>
+
+    <div class="form-alert form-alert--error" role="alert" data-form-error hidden></div>
+
+    <div>
+      <button type="submit" class="btn btn--dark" data-submit>
+        <span data-submit-label>Send message</span> <Icon name="arrow" class="" strokeWidth={1.6} />
+      </button>
+    </div>
+  </form>
+
+  <div class="form-success" data-form-success hidden tabindex="-1">
+    <Icon name="check" class="" strokeWidth={1} />
+    <h2>Thank you.</h2>
+    <p>Your message has been sent to our team at {SITE.email}. We'll reply to you by email. A confirmation may also arrive in your inbox — please check your spam folder if you don't see it.</p>
+    <button type="button" class="btn btn--ghost-dark" data-form-reset>Send another message</button>
+  </div>
+</div>
+
+<script>
+  import { streamAi, AiError } from "../scripts/ai";
+
+  const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
+  if (form) {
+    const success = document.querySelector<HTMLElement>("[data-form-success]")!;
+    const alertBox = form.querySelector<HTMLElement>("[data-form-error]")!;
+    const submit = form.querySelector<HTMLButtonElement>("[data-submit]")!;
+    const submitLabel = form.querySelector<HTMLElement>("[data-submit-label]")!;
+    const startedAt = form.querySelector<HTMLInputElement>("[data-started-at]")!;
+    startedAt.value = String(Date.now());
+
+    // Pre-select a service when arriving from a service page (?service=slug).
+    const pre = new URLSearchParams(location.search).get("service");
+    if (pre) {
+      const box = form.querySelector<HTMLInputElement>(`input[name="interests"][value="${CSS.escape(pre)}"]`);
+      if (box) box.checked = true;
+    }
+
+    const setError = (name: string, msg: string) => {
+      const el = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+      const input = form.querySelector<HTMLInputElement>(`[name="${name}"]`);
+      if (el) el.textContent = msg;
+      if (input) input.setAttribute("aria-invalid", msg ? "true" : "false");
+    };
+
+    function validate(): boolean {
+      const data = new FormData(form!);
+      const name = String(data.get("name") || "").trim();
+      const email = String(data.get("email") || "").trim();
+      const message = String(data.get("message") || "").trim();
+      const checks: [string, string][] = [
+        ["name", name ? "" : "Please enter your name."],
+        ["email", !email ? "Please enter your email address." : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? "" : "Please enter a valid email address."],
+        ["message", message.length >= 10 ? "" : "Please tell us a little more (at least 10 characters)."],
+        ["consent", data.get("consent") ? "" : "Please confirm you agree so we can respond."],
+      ];
+      checks.forEach(([n, m]) => setError(n, m));
+      const first = checks.find(([, m]) => m);
+      if (first) form!.querySelector<HTMLElement>(`[name="${first[0]}"]`)?.focus();
+      return !first;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      alertBox.hidden = true;
+      if (!validate()) return;
+      const data = new FormData(form);
+      const payload = {
+        name: data.get("name"), email: data.get("email"), company: data.get("company"), role: data.get("role"),
+        message: data.get("message"), interests: data.getAll("interests"), consent: data.get("consent") === "yes",
+        website: data.get("website"), startedAt: Number(data.get("startedAt")), page: location.pathname,
+      };
+      submit.disabled = true;
+      submitLabel.textContent = "Sending…";
+      try {
+        const res = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok || !body.ok) {
+          if (body.fields) Object.entries(body.fields as Record<string, string>).forEach(([n, m]) => setError(n, m));
+          throw new Error(body.error || "send-failed");
+        }
+        form.hidden = true;
+        success.hidden = false;
+        success.focus();
+      } catch (err) {
+        const msg = err instanceof Error && err.message !== "send-failed" && !/fetch|network/i.test(err.message)
+          ? err.message
+          : "We couldn't send your message just now.";
+        alertBox.innerHTML = "";
+        alertBox.append(`${msg} Please try again in a moment, or email us directly at `);
+        const a = document.createElement("a");
+        a.href = "mailto:info@etrynity.com";
+        a.textContent = "info@etrynity.com";
+        alertBox.append(a, ".");
+        alertBox.hidden = false;
+      } finally {
+        submit.disabled = false;
+        submitLabel.textContent = "Send message";
+      }
+    });
+
+    document.querySelector("[data-form-reset]")?.addEventListener("click", () => {
+      form.reset();
+      startedAt.value = String(Date.now());
+      success.hidden = true;
+      form.hidden = false;
+      form.querySelector<HTMLInputElement>("#cf-name")?.focus();
+    });
+
+    // AI drafting of the message body.
+    const draftBtn = form.querySelector<HTMLButtonElement>("[data-ai-draft]")!;
+    const draftLabel = form.querySelector<HTMLElement>("[data-draft-label]")!;
+    const draftStatus = form.querySelector<HTMLElement>("[data-draft-status]")!;
+    draftBtn.addEventListener("click", async () => {
+      const data = new FormData(form);
+      const area = form.querySelector<HTMLTextAreaElement>("#cf-message")!;
+      const labels = Array.from(form.querySelectorAll<HTMLInputElement>('input[name="interests"]:checked')).map(
+        (i) => i.closest("label")!.textContent!.trim(),
+      );
+      const prompt = [
+        `Interested in: ${labels.join(", ") || "not specified"}`,
+        `Company: ${String(data.get("company") || "").trim() || "not given"}`,
+        `Role: ${String(data.get("role") || "").trim() || "not given"}`,
+        `Their notes so far (may be empty): ${area.value.trim() || "none"}`,
+      ].join("\n");
+      const previous = area.value;
+      draftBtn.disabled = true;
+      draftLabel.textContent = "Drafting…";
+      draftStatus.textContent = "";
+      try {
+        await streamAi("draft", [{ role: "user", content: prompt }], (t) => { area.value = t; });
+        draftStatus.textContent = "Draft ready — please review and edit before sending.";
+      } catch (err) {
+        area.value = previous;
+        draftStatus.textContent = err instanceof AiError ? err.message : "AI drafting is unavailable right now.";
+      } finally {
+        draftBtn.disabled = false;
+        draftLabel.textContent = "Help me write this with AI";
+      }
+    });
+  }
+</script>

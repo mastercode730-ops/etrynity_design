@@ -1,0 +1,23 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+import ContentIndex from "../../components/ContentIndex.astro";
+
+// Generates /case-studies only once at least one approved, published case study exists.
+export const getStaticPaths = (async ({ paginate }) => {
+  const items = (await getCollection("case-studies", (e) => !e.data.draft))
+    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+    .map((c) => ({ href: `/case-studies/${c.id}`, title: c.data.title, description: c.data.description, date: c.data.date, meta: c.data.industry }));
+  if (!items.length) return [];
+  return paginate(items, { pageSize: 12 });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+---
+<ContentIndex
+  name="Case studies"
+  href="/case-studies"
+  heading="Case studies"
+  description="Real projects, delivered with our clients — the challenges, what we did and the results."
+  page={page}
+/>

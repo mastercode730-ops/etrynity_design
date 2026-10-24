@@ -1,0 +1,47 @@
+---
+import { Picture } from "astro:assets";
+import emblem from "../assets/emblem.png";
+import Icon from "./Icon.astro";
+
+const suggestions = [
+  "What does Etrynity do?",
+  "How can AI help my business?",
+  "Can you help with customer support?",
+  "How do I start a project?",
+];
+---
+<button class="eai-launch" type="button" aria-expanded="false" aria-controls="eai-panel" data-eai-launch hidden>
+  <span class="eai-orb"><Picture src={emblem} formats={["avif", "webp"]} widths={[30, 60]} sizes="30px" alt="" loading="lazy" /></span>
+  <span class="eai-label">ASK ETRYNITY AI</span>
+  <span class="sr-only">Open the Etrynity AI assistant</span>
+</button>
+
+<section class="eai-panel" id="eai-panel" role="dialog" aria-modal="false" aria-labelledby="eai-title" data-eai-panel>
+  <div class="eai-head">
+    <span class="eai-orb"><Picture src={emblem} formats={["avif", "webp"]} widths={[30, 60]} sizes="30px" alt="" loading="lazy" /></span>
+    <div class="eai-title">
+      <strong id="eai-title">ETRYNITY AI</strong>
+      <span><i class="live-dot" aria-hidden="true"></i>Ask about our services</span>
+    </div>
+    <button class="eai-close" type="button" data-eai-close><Icon name="close" class="" strokeWidth={1.6} /><span class="sr-only">Close assistant</span></button>
+  </div>
+  <div class="eai-log" aria-live="polite" data-eai-log>
+    <div class="eai-msg bot ai-format">
+      Hello — I'm <strong>Etrynity AI</strong>. I can explain our services, suggest the right team for your challenge, or help you get in touch. How can I help?
+    </div>
+  </div>
+  <div class="eai-suggest" data-eai-suggest>
+    {suggestions.map((q) => <button type="button" data-eai-question={q}>{q}</button>)}
+  </div>
+  <p class="eai-note" data-eai-note>AI-generated answers can be imperfect. For anything important, contact our team.</p>
+  <form class="eai-form" data-eai-form>
+    <label for="eai-input" class="sr-only">Message Etrynity AI</label>
+    <textarea id="eai-input" rows="1" maxlength="1500" placeholder="Ask anything about Etrynity…" required></textarea>
+    <button type="submit"><Icon name="arrow" class="" strokeWidth={1.8} /><span class="sr-only">Send message</span></button>
+  </form>
+</section>
+
+<script>
+  import { initAssistant } from "../scripts/ai";
+  initAssistant();
+</script>

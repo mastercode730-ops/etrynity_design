@@ -1,0 +1,23 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+import ContentIndex from "../../components/ContentIndex.astro";
+
+// Generates /insights only once at least one published article exists.
+export const getStaticPaths = (async ({ paginate }) => {
+  const posts = (await getCollection("insights", (e) => !e.data.draft))
+    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+    .map((p) => ({ href: `/insights/${p.id}`, title: p.data.title, description: p.data.description, date: p.data.date }));
+  if (!posts.length) return [];
+  return paginate(posts, { pageSize: 12 });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+---
+<ContentIndex
+  name="Insights"
+  href="/insights"
+  heading="Insights"
+  description="Practical perspectives on technology, AI, operations, logistics and skills from the Etrynity team."
+  page={page}
+/>

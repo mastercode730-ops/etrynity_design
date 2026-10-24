@@ -1,0 +1,59 @@
+---
+// Google Analytics 4, loaded only after the visitor accepts analytics cookies.
+// Enabled by setting PUBLIC_GA_ID (e.g. G-XXXXXXXXXX) in the Vercel project.
+const gaId = import.meta.env.PUBLIC_GA_ID;
+---
+{gaId && (
+  <>
+    <div class="consent-banner" role="region" aria-label="Cookie preferences" hidden data-consent data-ga-id={gaId}>
+      <p>We use analytics cookies to understand how the site is used and improve it. They are only set if you accept. <a href="/privacy-policy">Privacy policy</a></p>
+      <div class="btn-row">
+        <button type="button" class="btn btn--outline" data-consent-choice="denied">Decline</button>
+        <button type="button" class="btn btn--gold" data-consent-choice="granted">Accept</button>
+      </div>
+    </div>
+    <script>
+      const banner = document.querySelector<HTMLElement>("[data-consent]");
+      const KEY = "etrynity-consent";
+      function read() {
+        try { return localStorage.getItem(KEY); } catch { return null; }
+      }
+      function load(id: string) {
+        const w = window as unknown as { dataLayer: unknown[]; gtag: (...a: unknown[]) => void };
+        w.dataLayer = w.dataLayer || [];
+        w.gtag = function () { w.dataLayer.push(arguments); };
+        w.gtag("js", new Date());
+        w.gtag("config", id, { anonymize_ip: true });
+        const s = document.createElement("script");
+        s.async = true;
+        s.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;
+        document.head.appendChild(s);
+      }
+      if (banner) {
+        const id = banner.dataset.gaId!;
+        const choice = read();
+        if (choice === "granted") load(id);
+        else if (!choice) banner.hidden = false;
+        banner.addEventListener("click", (e) => {
+          const btn = (e.target as HTMLElement).closest<HTMLButtonElement>("[data-consent-choice]");
+          if (!btn) return;
+          const value = btn.dataset.consentChoice!;
+          try { localStorage.setItem(KEY, value); } catch {}
+          banner.hidden = true;
+          if (value === "granted") load(id);
+        });
+        document.addEventListener("click", (e) => {
+          if ((e.target as HTMLElement).closest("[data-cookie-settings]")) {
+            e.preventDefault();
+            banner.hidden = false;
+          }
+        });
+      }
+    </script>
+    <style>
+      .consent-banner { position: fixed; left: 16px; bottom: 16px; z-index: 95; max-width: 460px; display: flex; flex-direction: column; gap: 16px; padding: 22px; background: rgba(8, 17, 31, 0.97); border: 1px solid var(--line-strong); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5); font-size: 14.5px; color: var(--mist-light); }
+      .consent-banner[hidden] { display: none; }
+      .consent-banner .btn { min-height: 44px; padding: 12px 20px; }
+    </style>
+  </>
+)}

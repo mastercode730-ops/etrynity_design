@@ -1,50 +1,81 @@
-# Etrynity — Website
+# Etrynity — website
 
-The Etrynity website: static HTML/CSS pages with a motion layer and AI features, plus one Vercel serverless function (`api/chat.js`) that calls the Claude API.
+The Etrynity company website: [Astro](https://astro.build) static pages for speed and SEO, plus two Vercel serverless functions — **Etrynity AI** (`/api/chat`) and the **contact form** (`/api/contact`).
 
 ## Pages
 
-| URL | Screen |
+| URL | Page |
 |---|---|
-| `/` | Home: AI hero, AI-at-the-core section, AI Solution Finder |
-| `/services` | Services, with an "Ask AI about this" button on each division |
-| `/about` | About |
-| `/contact` | Contact, with "Draft my message with AI" (the form itself is a demo; nothing is sent) |
-| `/mobile` | Home at phone size (390px) |
-| `/style-guide` | Logo, colours, type, buttons, icons |
-| `/screens` | Gallery linking every screen |
+| `/` | Home |
+| `/services` | Services overview |
+| `/services/it-technology` | IT & Technology |
+| `/services/ai-business-automation` | AI & Business Automation |
+| `/services/bpo-global-services` | BPO & Global Services |
+| `/services/logistics-supply-chain` | Logistics & Supply Chain |
+| `/services/education-training` | Education & Training |
+| `/our-approach` | Our Approach / How We Work |
+| `/about` | About Us |
+| `/contact` | Contact Us (enquiry form) |
+| `/privacy-policy` | Privacy policy |
+| `/insights`, `/case-studies` | Generated automatically once the first entry is published (see below) |
 
-## AI features
+## Where to edit content
 
-- **Etrynity AI assistant:** a floating chat button on every page. It streams answers about Etrynity's services.
-- **AI Solution Finder (home page):** a visitor describes a business challenge and gets the recommended divisions plus first steps.
-- **Draft with AI (contact page):** writes the enquiry message from the selected interests and details.
+- **Company facts** (email, Instagram, values, process, engagement models): `src/data/site.ts`. Every page reads contact details from here.
+- **Service pages** (headings, offerings, benefits, steps, FAQs, SEO title and description): `src/data/services.ts`.
+- **What Etrynity AI knows:** it is built from the two files above. Extra rules are in `src/pages/api/chat.ts`.
+- **Page layouts:** `src/pages/*.astro`. Shared pieces (header, footer, CTA, FAQ, illustrations) live in `src/components/`.
+- **Design system** (colours, type scale, components, motion): `src/styles/global.css`.
 
-All three call `POST /api/chat`, which uses `claude-opus-5-5` with streaming. The company facts the AI may use are in the `COMPANY` prompt in `api/chat.js`; update them there as details change (contact info, team, etc.).
-
-**Demo mode:** if the API key is missing or the endpoint can't be reached (for example when you open the files locally), the features still work. They answer from built-in company info and show a small "Demo mode" note.
-
-## Animations and effects
-
-These live in `assets/fx.css` and `assets/fx.js`, with no libraries:
-
-- a neural-network canvas in the hero that reacts to the mouse
-- headline word cascade and gold shimmer text
-- orbiting light trails over the globe image
-- glass sticky navigation and a scroll progress bar
-- scroll reveals, card spotlight and 3D tilt, and magnetic buttons
-- cursor glow, a capabilities marquee and soft page transitions
-
-Everything respects the visitor's "reduce motion" setting.
+Only publish verified information: no invented clients, statistics, team members or testimonials.
 
 ## Deploy on Vercel
 
-1. Import the GitHub repo at vercel.com/new. Leave the framework as **Other** and the build command empty.
-2. In **Project → Settings → Environment Variables**, add `ANTHROPIC_API_KEY` with a key from console.anthropic.com, then redeploy.
+The repo includes `vercel.json`, so Vercel builds it as an Astro project on Node 24. In **Project → Settings → Environment Variables**, add the variables below, then redeploy.
 
-Without the key the site still deploys and runs in demo mode.
+| Variable | Required | Purpose |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | Yes, for AI | Etrynity AI assistant, Solution Finder and message drafting (Claude `claude-opus-5-5`). |
+| `RESEND_API_KEY` | Yes, for the form | Delivers contact-form enquiries. |
+| `CONTACT_TO` | No | Inbox for enquiries (default `info@etrynity.com`). |
+| `CONTACT_FROM` | No | Sender (default `Etrynity Website <info@etrynity.com>`); the domain must be verified in Resend. |
+| `CONTACT_AUTOREPLY` | No | Set to `false` to stop the confirmation email sent to visitors. |
+| `PUBLIC_GA_ID` | No | Google Analytics 4 ID. Analytics loads only after the visitor accepts the cookie banner. |
+| `PUBLIC_GOOGLE_SITE_VERIFICATION` | No | Search Console HTML-tag token. |
+| `SITE_URL` | No | Canonical URL override. By default this is Vercel's production domain, which becomes your custom domain once you attach one. |
 
-## Preview locally
+Without the keys the site still works. The AI features show a clear "unavailable" message (the Solution Finder falls back to a keyword-based suggestion), and the form asks visitors to email info@etrynity.com.
 
-- `npx vercel dev` runs the pages and the AI endpoint.
-- `npx serve .` runs the pages only, with the AI in demo mode.
+### Resend setup (contact form)
+
+1. Create a Resend account and add the domain **etrynity.com**. Add the DNS records Resend shows you, and wait for it to report "Verified".
+2. Create an API key and save it as `RESEND_API_KEY` in Vercel.
+3. Send a test enquiry from `/contact` and confirm it arrives at info@etrynity.com.
+
+### Google Search Console & Analytics
+
+1. **Search Console:** add the site as a URL-prefix property and choose **HTML tag** verification. Put the token in `PUBLIC_GOOGLE_SITE_VERIFICATION`, redeploy, click **Verify**, then submit `https://<your-domain>/sitemap-index.xml` under **Sitemaps**.
+2. **Analytics:** create a GA4 property and web stream, put the measurement ID in `PUBLIC_GA_ID`, and redeploy.
+
+## Adding insights and case studies
+
+Copy `src/content/insights/_template.md` (or `src/content/case-studies/_template.md`) to a new file without the leading underscore, fill in the front matter, and set `draft: false`. The listing page, the article page, sitemap entries, structured data and footer links are all created automatically. Case studies require `clientApproved: true`.
+
+## Local development
+
+This needs Node 24 (Astro 7 requires Node 22.23 or later).
+
+```
+npm install
+cp .env.example .env   # add keys if you want the AI and form to work locally
+npm run dev            # http://localhost:4321
+npm run build          # production build into .vercel/output
+```
+
+## SEO built in
+
+- A unique title, description and canonical URL on every page.
+- Open Graph and Twitter cards with a branded share image.
+- JSON-LD structured data: Organization, WebSite, WebPage and BreadcrumbList on every page, plus Service, OfferCatalog and FAQPage on service pages.
+- `sitemap-index.xml`, a generated `robots.txt`, and descriptive alt text on all images.
+- Self-hosted fonts, and images optimised to AVIF/WebP.

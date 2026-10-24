@@ -1,0 +1,91 @@
+---
+import Icon from "./Icon.astro";
+import { SERVICES } from "../data/services";
+
+const examples = [
+  ["Launch a customer app", "We want to launch a customer app and stop producing our weekly reports by hand."],
+  ["Scale customer support", "Our customer support team can't keep up with growing email and chat volumes."],
+  ["Fix late deliveries", "Deliveries are often late and we have no visibility into where shipments are."],
+  ["Train teams on AI", "Our staff need practical training to use AI tools and our new software."],
+];
+// Keyword fallback, used only if the AI service is unavailable.
+const matcher = JSON.stringify(
+  SERVICES.map((s) => ({ slug: s.slug, name: s.name, summary: s.summary })),
+);
+---
+<form class="finder" data-finder data-services={matcher} novalidate>
+  <label for="finder-input">Your business challenge</label>
+  <textarea id="finder-input" name="challenge" maxlength="1500" required placeholder="e.g. Our support team is overwhelmed and our deliveries are often late…" aria-describedby="finder-status"></textarea>
+  <div class="chips" aria-label="Example challenges">
+    {examples.map(([label, text]) => <button type="button" class="chip-btn" data-example={text}>{label}</button>)}
+  </div>
+  <button type="submit" class="btn btn--gold" data-finder-run><Icon name="spark" class="" strokeWidth={1.5} />Analyse with AI</button>
+  <div class="finder-output ai-format" aria-live="polite" data-finder-output>
+    <p class="placeholder-text">Your tailored recommendation will appear here.</p>
+  </div>
+  <p class="ai-status" id="finder-status" data-finder-status></p>
+</form>
+
+<script>
+  import { streamAi, formatAi, AiError } from "../scripts/ai";
+
+  const KEYWORDS: Record<string, RegExp> = {
+    "it-technology": /software|app\b|apps|web|website|portal|cloud|server|hosting|legacy|system|integrat|database|data\b|dashboard|report/gi,
+    "ai-business-automation": /\bai\b|automat|manual|repetitive|chatbot|assistant|document|invoice|forecast|machine learning|workflow/gi,
+    "bpo-global-services": /support|customer|call|ticket|back.?office|outsourc|admin|data entry|staff|team|hiring|process/gi,
+    "logistics-supply-chain": /deliver|shipment|shipping|freight|warehouse|inventory|stock|logistic|supply|transport|route|fulfil/gi,
+    "education-training": /train|learn|course|skill|upskill|teach|career|certif|education|onboard|workshop/gi,
+  };
+
+  document.querySelectorAll<HTMLFormElement>("[data-finder]").forEach((form) => {
+    const input = form.querySelector("textarea")!;
+    const out = form.querySelector<HTMLElement>("[data-finder-output]")!;
+    const status = form.querySelector<HTMLElement>("[data-finder-status]")!;
+    const run = form.querySelector<HTMLButtonElement>("[data-finder-run]")!;
+    const services = JSON.parse(form.dataset.services!) as { slug: string; name: string; summary: string }[];
+
+    form.querySelectorAll<HTMLButtonElement>("[data-example]").forEach((chip) =>
+      chip.addEventListener("click", () => { input.value = chip.dataset.example!; input.focus(); }),
+    );
+
+    function keywordMatch(q: string) {
+      const scored = services
+        .map((s) => ({ s, n: (q.match(KEYWORDS[s.slug]) || []).length }))
+        .sort((a, b) => b.n - a.n);
+      const picks = scored.filter((x) => x.n > 0).slice(0, 2);
+      const chosen = picks.length ? picks : [];
+      if (!chosen.length) {
+        return "## A good place to start\nEvery engagement begins with a short discovery conversation to understand your goals.\n- Browse all five divisions at /services\n- Or describe your challenge to our team at /contact";
+      }
+      return "## Likely a fit\n" + chosen.map((x) => `- **${x.s.name}** — ${x.s.summary} See /services/${x.s.slug}`).join("\n") +
+        "\n## Next step\nShare a few details at /contact and our team will map out an approach with you.";
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const q = input.value.trim();
+      if (q.length < 8) {
+        status.textContent = "Please describe your challenge in a sentence or two.";
+        status.classList.add("is-error");
+        input.focus();
+        return;
+      }
+      status.textContent = "";
+      status.classList.remove("is-error");
+      run.disabled = true;
+      out.classList.add("is-streaming");
+      out.innerHTML = '<p class="placeholder-text">Analysing your challenge…</p>';
+      try {
+        await streamAi("finder", [{ role: "user", content: q }], (t) => { out.innerHTML = formatAi(t); });
+      } catch (err) {
+        out.innerHTML = formatAi(keywordMatch(q));
+        status.textContent = err instanceof AiError && err.kind === "rate"
+          ? err.message
+          : "Our AI is unavailable right now, so this is a quick keyword-based suggestion.";
+      } finally {
+        out.classList.remove("is-streaming");
+        run.disabled = false;
+      }
+    });
+  });
+</script>

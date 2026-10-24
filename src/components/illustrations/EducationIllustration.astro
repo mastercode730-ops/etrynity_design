@@ -1,0 +1,47 @@
+---
+interface Props { id?: string }
+const { id = "education" } = Astro.props;
+const nodes: [number, number][] = [[200, 250], [250, 208], [300, 222], [348, 172], [392, 150]];
+---
+<div class="illustration">
+  <svg viewBox="0 0 560 460" role="img" aria-labelledby={`${id}-t`}>
+    <title id={`${id}-t`}>Illustration: an open book with skills rising from it as a growth path towards a graduation cap</title>
+    <defs>
+      <radialGradient id={`${id}-glow`}><stop offset="0" stop-color="#C9A46A" stop-opacity=".22" /><stop offset="1" stop-color="#C9A46A" stop-opacity="0" /></radialGradient>
+      <linearGradient id={`${id}-bar`} x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#C9A46A" stop-opacity=".05" /><stop offset="1" stop-color="#C9A46A" stop-opacity=".4" /></linearGradient>
+    </defs>
+    <circle cx="280" cy="240" r="230" fill={`url(#${id}-glow)`} />
+    {[[176, 300, 40], [226, 260, 80], [276, 270, 70], [326, 214, 126], [376, 186, 154]].map(([x, y, h]) => (
+      <rect x={x - 14} y={y} width="28" height={h} fill={`url(#${id}-bar)`} />
+    ))}
+    <path class="flow" d={`M${nodes.map((n) => n.join(" ")).join("L")}`} fill="none" stroke="#E2C792" stroke-width="1.8" />
+    {nodes.map(([x, y]) => (
+      <g>
+        <circle class="pulse" cx={x} cy={y} r="10" fill="#E2C792" fill-opacity=".22" />
+        <circle cx={x} cy={y} r="5" fill="#0C1729" stroke="#E2C792" stroke-width="1.6" />
+      </g>
+    ))}
+    <g class="drift">
+      <path d="M420 60l82 34-82 34-82-34z" fill="#0F1D33" stroke="#E2C792" stroke-width="1.5" />
+      <path d="M368 108v30c26 18 78 18 104 0v-30" fill="none" stroke="#E2C792" stroke-width="1.5" />
+      <path d="M502 94v44" stroke="#C9A46A" stroke-width="1.5" />
+      <circle cx="502" cy="142" r="4" fill="#E2C792" />
+    </g>
+    <g>
+      <path d="M280 410c-56-26-130-26-196-8V292c66-18 140-18 196 8z" fill="#0F1D33" stroke="#C9A46A" stroke-width="1.4" />
+      <path d="M280 410c56-26 130-26 196-8V292c-66-18-140-18-196 8z" fill="#0F1D33" stroke="#C9A46A" stroke-width="1.4" />
+      <path d="M280 300v110" stroke="#E2C792" stroke-width="1.4" />
+      {[0, 1, 2, 3].map((i) => (
+        <>
+          <path d={`M110 ${318 + i * 18}c46-12 98-12 146 4`} fill="none" stroke="#C9A46A" stroke-opacity=".4" />
+          <path d={`M304 ${322 + i * 18}c48-16 100-16 146-4`} fill="none" stroke="#C9A46A" stroke-opacity=".4" />
+        </>
+      ))}
+    </g>
+    <g fill="none" stroke="#E2C792" stroke-width="1.2">
+      <path class="pulse" d="M120 140l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" />
+      <path class="pulse" d="M470 250l2.5 6 6 2.5-6 2.5-2.5 6-2.5-6-6-2.5 6-2.5z" />
+    </g>
+    <circle cx="60" cy="230" r="2" fill="#C9A46A" /><circle cx="520" cy="380" r="2" fill="#C9A46A" />
+  </svg>
+</div>
