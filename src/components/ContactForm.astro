@@ -85,7 +85,8 @@ const interests = [...SERVICES.map((s) => ({ value: s.slug, label: s.name })), {
 </div>
 
 <script>
-  import { streamAi, AiError } from "../scripts/ai";
+  import { streamAi, AiError, CONTACT_EMAIL } from "../scripts/ai";
+  import { track } from "../scripts/analytics";
 
   const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
   if (form) {
@@ -146,6 +147,7 @@ const interests = [...SERVICES.map((s) => ({ value: s.slug, label: s.name })), {
           if (body.fields) Object.entries(body.fields as Record<string, string>).forEach(([n, m]) => setError(n, m));
           throw new Error(body.error || "send-failed");
         }
+        track("generate_lead", { form: "contact", interests: (payload.interests as string[]).join(",") || "none" });
         form.hidden = true;
         success.hidden = false;
         success.focus();
@@ -156,10 +158,11 @@ const interests = [...SERVICES.map((s) => ({ value: s.slug, label: s.name })), {
         alertBox.innerHTML = "";
         alertBox.append(`${msg} Please try again in a moment, or email us directly at `);
         const a = document.createElement("a");
-        a.href = "mailto:info@etrynity.com";
-        a.textContent = "info@etrynity.com";
+        a.href = `mailto:${CONTACT_EMAIL}`;
+        a.textContent = CONTACT_EMAIL;
         alertBox.append(a, ".");
         alertBox.hidden = false;
+        track("contact_form_error", { form: "contact" });
       } finally {
         submit.disabled = false;
         submitLabel.textContent = "Send message";
@@ -197,8 +200,10 @@ const interests = [...SERVICES.map((s) => ({ value: s.slug, label: s.name })), {
       try {
         await streamAi("draft", [{ role: "user", content: prompt }], (t) => { area.value = t; });
         draftStatus.textContent = "Draft ready — please review and edit before sending.";
+        track("ai_draft", { result: "success" });
       } catch (err) {
         area.value = previous;
+        track("ai_draft", { result: "unavailable" });
         draftStatus.textContent = err instanceof AiError ? err.message : "AI drafting is unavailable right now.";
       } finally {
         draftBtn.disabled = false;

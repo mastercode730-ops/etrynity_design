@@ -1,6 +1,9 @@
 // Etrynity AI client: chat assistant, Solution Finder and contact-message drafting.
 // All three stream from POST /api/chat. Failures produce clear, honest messages.
-export const CONTACT_EMAIL = "info@etrynity.com";
+import { SITE } from "../data/site";
+import { track } from "./analytics";
+
+export const CONTACT_EMAIL = SITE.email;
 
 type Mode = "chat" | "finder" | "draft";
 type Msg = { role: "user" | "assistant"; content: string };
@@ -24,7 +27,7 @@ export function formatAi(text: string): string {
   for (const raw of escapeHtml(text).split("\n")) {
     let line = raw.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
     line = line.replace(ROUTES, '$1<a href="$2">$2</a>');
-    line = line.replace(/info@etrynity\.com/g, `<a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>`);
+    line = line.split(CONTACT_EMAIL).join(`<a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>`);
     if (/^\s*[-•]\s+/.test(line)) {
       if (!list) { out.push("<ul>"); list = true; }
       out.push(`<li>${line.replace(/^\s*[-•]\s+/, "")}</li>`);
@@ -95,6 +98,7 @@ export function initAssistant() {
 
   function open(question?: string) {
     panel!.classList.add("is-open");
+    track("ai_assistant_open", { page: location.pathname });
     launch!.setAttribute("aria-expanded", "true");
     window.setTimeout(() => input.focus(), 120);
     if (question) send(question);
@@ -119,8 +123,10 @@ export function initAssistant() {
         log.scrollTop = log.scrollHeight;
       });
       history.push({ role: "assistant", content: reply });
+      track("ai_assistant_message", { result: "success" });
     } catch (err) {
       history.pop();
+      track("ai_assistant_message", { result: err instanceof AiError ? err.kind : "error" });
       bot.classList.add("error");
       const msg = err instanceof AiError ? err.message : "Something went wrong. Please try again.";
       bot.innerHTML = formatAi(msg);

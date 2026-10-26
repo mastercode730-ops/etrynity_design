@@ -1,0 +1,20 @@
+---
+// Shown when a contact form submitted without JavaScript could not be sent.
+import Base from "../../layouts/Base.astro";
+import { SITE } from "../../data/site";
+---
+<Base title="Message not sent" description="Your enquiry could not be sent. Please try again or email Etrynity directly." noindex>
+  <section class="section">
+    <div class="container">
+      <div class="stack center" style="max-width:680px;text-align:center">
+        <span class="eyebrow eyebrow--plain">Contact form</span>
+        <h1 class="display" style="font-size:clamp(40px,5.6vw,72px)">Your message <em>wasn't sent.</em></h1>
+        <p class="lead">Please check that you entered your name, a valid email address, a message of at least 10 characters, and ticked the consent box — then try again. If the problem continues, email us directly at <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
+        <div class="btn-row" style="justify-content:center">
+          <a class="btn btn--gold" href="/contact">Back to the contact form</a>
+          <a class="btn btn--outline" href={`mailto:${SITE.email}`}>Email {SITE.email}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

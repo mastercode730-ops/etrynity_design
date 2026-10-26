@@ -28,6 +28,7 @@ const matcher = JSON.stringify(
 
 <script>
   import { streamAi, formatAi, AiError } from "../scripts/ai";
+  import { track } from "../scripts/analytics";
 
   const KEYWORDS: Record<string, RegExp> = {
     "it-technology": /software|app\b|apps|web|website|portal|cloud|server|hosting|legacy|system|integrat|database|data\b|dashboard|report/gi,
@@ -77,8 +78,10 @@ const matcher = JSON.stringify(
       out.innerHTML = '<p class="placeholder-text">Analysing your challenge…</p>';
       try {
         await streamAi("finder", [{ role: "user", content: q }], (t) => { out.innerHTML = formatAi(t); });
+        track("ai_solution_finder", { result: "ai" });
       } catch (err) {
         out.innerHTML = formatAi(keywordMatch(q));
+        track("ai_solution_finder", { result: "keyword_fallback" });
         status.textContent = err instanceof AiError && err.kind === "rate"
           ? err.message
           : "Our AI is unavailable right now, so this is a quick keyword-based suggestion.";

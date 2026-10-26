@@ -18,16 +18,32 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
       function read() {
         try { return localStorage.getItem(KEY); } catch { return null; }
       }
+      const w = window as unknown as Record<string, unknown> & { dataLayer: unknown[]; gtag?: (...a: unknown[]) => void };
+      let loaded = false;
       function load(id: string) {
-        const w = window as unknown as { dataLayer: unknown[]; gtag: (...a: unknown[]) => void };
+        w[`ga-disable-${id}`] = false;
+        if (loaded) { w.gtag!("consent", "update", { analytics_storage: "granted" }); return; }
+        loaded = true;
         w.dataLayer = w.dataLayer || [];
         w.gtag = function () { w.dataLayer.push(arguments); };
+        // Consent Mode: analytics only; advertising storage and signals stay denied.
+        w.gtag("consent", "default", { analytics_storage: "granted", ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied" });
         w.gtag("js", new Date());
-        w.gtag("config", id, { anonymize_ip: true });
+        w.gtag("config", id);
         const s = document.createElement("script");
         s.async = true;
         s.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;
         document.head.appendChild(s);
+      }
+      function revoke(id: string) {
+        w[`ga-disable-${id}`] = true;
+        w.gtag?.("consent", "update", { analytics_storage: "denied" });
+        // Remove GA cookies already set on this domain.
+        document.cookie.split(";").map((c) => c.split("=")[0].trim()).filter((n) => n === "_ga" || n.startsWith("_ga_")).forEach((n) => {
+          const host = location.hostname;
+          for (const domain of ["", `; domain=${host}`, `; domain=.${host.split(".").slice(-2).join(".")}`])
+            document.cookie = `${n}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/${domain}`;
+        });
       }
       if (banner) {
         const id = banner.dataset.gaId!;
@@ -40,7 +56,12 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
           const value = btn.dataset.consentChoice!;
           try { localStorage.setItem(KEY, value); } catch {}
           banner.hidden = true;
-          if (value === "granted") load(id);
+          if (value === "granted") load(id); else revoke(id);
+        });
+        // Email-link clicks (no address or personal data is sent).
+        document.addEventListener("click", (e) => {
+          const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href^="mailto:"]');
+          if (a) w.gtag?.("event", "contact_email_click", { link_location: location.pathname });
         });
         document.addEventListener("click", (e) => {
           if ((e.target as HTMLElement).closest("[data-cookie-settings]")) {

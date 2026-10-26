@@ -1,8 +1,8 @@
 // Contact-form endpoint: validates the enquiry and delivers it by email via Resend.
 // Environment variables (Vercel project settings):
 //   RESEND_API_KEY     required — API key from resend.com
-//   CONTACT_TO         optional — inbox that receives enquiries (default info@etrynity.com)
-//   CONTACT_FROM       optional — verified sender (default "Etrynity Website <info@etrynity.com>")
+//   CONTACT_TO         optional — inbox that receives enquiries (default connect@etrynity.com)
+//   CONTACT_FROM       optional — verified sender (default "Etrynity Website <connect@etrynity.com>")
 //   CONTACT_AUTOREPLY  optional — set to "false" to stop the confirmation email to visitors
 import type { APIRoute } from "astro";
 import { Resend } from "resend";
@@ -110,7 +110,7 @@ export const POST: APIRoute = async ({ request, clientAddress, redirect }) => {
   }
   const { data, isForm } = parsed;
   const done = (ok: boolean, status: number, extra: Record<string, unknown> = {}) =>
-    isForm ? redirect(ok ? "/contact/thank-you" : "/contact?status=error", 303) : json({ ok, ...extra }, status);
+    isForm ? redirect(ok ? "/contact/thank-you" : "/contact/error", 303) : json({ ok, ...extra }, status);
 
   // Spam traps: hidden field filled in, or submitted faster than a person could type.
   if (data.website || (data.startedAt && Date.now() - data.startedAt < MIN_FILL_MS)) return done(true, 200);

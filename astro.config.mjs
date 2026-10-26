@@ -21,10 +21,19 @@ export default defineConfig({
   devToolbar: { enabled: false },
   integrations: [
     sitemap({
-      filter: (page) => !/\/(404|contact\/thank-you)$/.test(page),
+      filter: (page) => !/\/(404|contact\/(thank-you|error))$/.test(page),
     }),
   ],
+  // Permanent (301) redirects for retired URLs, including the .html pages of the first static site.
+  // Each points straight at its final destination so there are no redirect chains.
   redirects: {
+    "/index.html": "/",
+    "/services.html": "/services",
+    "/about.html": "/about",
+    "/contact.html": "/contact",
+    "/mobile.html": "/",
+    "/style-guide.html": "/",
+    "/screens.html": "/",
     "/mobile": "/",
     "/style-guide": "/",
     "/screens": "/",

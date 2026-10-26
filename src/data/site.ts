@@ -6,7 +6,7 @@ export const SITE = {
   tagline: "Infinite Possibilities",
   description:
     "Etrynity brings technology, intelligent automation and operational expertise together to help businesses solve practical challenges and grow with confidence.",
-  email: "info@etrynity.com",
+  email: "connect@etrynity.com",
   instagram: { handle: "@etrynity", url: "https://www.instagram.com/etrynity" },
   locale: "en_GB",
   themeColor: "#050D1A",

@@ -37,25 +37,26 @@ The repo includes `vercel.json`, so Vercel builds it as an Astro project on Node
 |---|---|---|
 | `ANTHROPIC_API_KEY` | Yes, for AI | Etrynity AI assistant, Solution Finder and message drafting (Claude `claude-opus-5-5`). |
 | `RESEND_API_KEY` | Yes, for the form | Delivers contact-form enquiries. |
-| `CONTACT_TO` | No | Inbox for enquiries (default `info@etrynity.com`). |
-| `CONTACT_FROM` | No | Sender (default `Etrynity Website <info@etrynity.com>`); the domain must be verified in Resend. |
+| `CONTACT_TO` | No | Inbox for enquiries (default `connect@etrynity.com`). |
+| `CONTACT_FROM` | No | Sender (default `Etrynity Website <connect@etrynity.com>`); the domain must be verified in Resend. |
 | `CONTACT_AUTOREPLY` | No | Set to `false` to stop the confirmation email sent to visitors. |
 | `PUBLIC_GA_ID` | No | Google Analytics 4 ID. Analytics loads only after the visitor accepts the cookie banner. |
 | `PUBLIC_GOOGLE_SITE_VERIFICATION` | No | Search Console HTML-tag token. |
 | `SITE_URL` | No | Canonical URL override. By default this is Vercel's production domain, which becomes your custom domain once you attach one. |
 
-Without the keys the site still works. The AI features show a clear "unavailable" message (the Solution Finder falls back to a keyword-based suggestion), and the form asks visitors to email info@etrynity.com.
+Without the keys the site still works. The AI features show a clear "unavailable" message (the Solution Finder falls back to a keyword-based suggestion), and the form asks visitors to email connect@etrynity.com.
 
 ### Resend setup (contact form)
 
 1. Create a Resend account and add the domain **etrynity.com**. Add the DNS records Resend shows you, and wait for it to report "Verified".
 2. Create an API key and save it as `RESEND_API_KEY` in Vercel.
-3. Send a test enquiry from `/contact` and confirm it arrives at info@etrynity.com.
+3. Send a test enquiry from `/contact` and confirm it arrives at connect@etrynity.com.
 
 ### Google Search Console & Analytics
 
 1. **Search Console:** add the site as a URL-prefix property and choose **HTML tag** verification. Put the token in `PUBLIC_GOOGLE_SITE_VERIFICATION`, redeploy, click **Verify**, then submit `https://<your-domain>/sitemap-index.xml` under **Sitemaps**.
 2. **Analytics:** create a GA4 property and web stream, put the measurement ID in `PUBLIC_GA_ID`, and redeploy.
+   GA loads only after the visitor accepts the cookie banner, with advertising storage always denied, and declining later removes the `_ga` cookies. Custom events, none of which contain personal data: `generate_lead` (enquiry sent), `contact_form_error`, `contact_email_click`, `ai_assistant_open`, `ai_assistant_message`, `ai_solution_finder` and `ai_draft`. In GA4, mark `generate_lead` as a **key event** so enquiries count as conversions.
 
 ## Adding insights and case studies
 
